@@ -99,6 +99,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.UnsupportedEncodingException
 import java.net.URLEncoder
+import android.app.AlertDialog
 
 const val DOCK_SERVICE_CONNECTED = "service_connected"
 const val ACTION_TAKE_SCREENSHOT = "take_screenshot"
