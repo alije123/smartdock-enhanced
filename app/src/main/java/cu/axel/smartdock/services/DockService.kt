@@ -259,7 +259,24 @@ class DockService : AccessibilityService(), OnSharedPreferenceChangeListener, On
             } else performGlobalAction(GLOBAL_ACTION_QUICK_SETTINGS)
         }
         pinBtn.setOnClickListener { togglePin() }
-        bluetoothBtn.setOnClickListener { toggleBluetooth() }
+        bluetoothBtn.setOnClickListener { 
+            if (bluetoothManager.adapter.isEnabled) {
+                val builder = AlertDialog.Builder(this@DockService)
+                builder.setMessage("Are you sure you want to disable bluetooth?")
+                    .setPositiveButton("Yes") { dialog, id ->
+                        //toggle bluetooth
+                        toggleBluetooth() 
+                    }
+                    .setNegativeButton("No") { dialog, id ->
+                        // Dismiss the dialog
+                        dialog.dismiss()
+                    }
+                val alert = builder.create()
+                alert.show()
+            }else {
+                toggleBluetooth() 
+            }
+        }
         bluetoothBtn.setOnLongClickListener {
             launchApp(
                 null, null,
@@ -267,7 +284,24 @@ class DockService : AccessibilityService(), OnSharedPreferenceChangeListener, On
             )
             true
         }
-        wifiBtn.setOnClickListener { toggleWifi() }
+        wifiBtn.setOnClickListener { 
+            if (wifiManager.isWifiEnabled) {
+                val builder = AlertDialog.Builder(this@DockService)
+                builder.setMessage("Are you sure you want to disable wifi?")
+                    .setPositiveButton("Yes") { dialog, id ->
+                        //toggle wifi
+                        toggleWifi()
+                    }
+                    .setNegativeButton("No") { dialog, id ->
+                        // Dismiss the dialog
+                        dialog.dismiss()
+                    }
+                val alert = builder.create()
+                alert.show()
+            }else {
+                toggleWifi() 
+            }
+        }
         wifiBtn.setOnLongClickListener {
             launchApp(
                 null, null,
@@ -937,7 +971,7 @@ class DockService : AccessibilityService(), OnSharedPreferenceChangeListener, On
     private fun hideDock(delay: Int) {
         dockHandler.removeCallbacksAndMessages(null)
         dockHandler.postDelayed({
-            if (!isPinned) {
+            if (!isPinned && !appMenuVisible && !audioPanelVisible) {
                 val animation = AnimationUtils.loadAnimation(context, R.anim.slide_down)
                 animation.setAnimationListener(object : Animation.AnimationListener {
                     override fun onAnimationStart(p1: Animation) {}
@@ -1165,6 +1199,9 @@ class DockService : AccessibilityService(), OnSharedPreferenceChangeListener, On
         searchEt.requestFocus()
 
         appMenuVisible = true
+
+        if (dockLayout.visibility == View.GONE)
+            showDock()
     }
 
     fun hideAppMenu() {
@@ -1751,6 +1788,9 @@ class DockService : AccessibilityService(), OnSharedPreferenceChangeListener, On
         ColorUtils.applyMainColor(context, sharedPreferences, audioPanel!!)
         windowManager.addView(audioPanel, layoutParams)
         audioPanelVisible = true
+
+        if (dockLayout.visibility == View.GONE)
+            showDock()
     }
 
     @SuppressLint("ClickableViewAccessibility")
