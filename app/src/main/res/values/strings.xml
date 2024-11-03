@@ -318,4 +318,8 @@
     <string name="save_log">Save log</string>
     <string name="open_again">Open app again</string>
 
+    <!--Disable Wifi/bluetooth-->
+    <string name="disablewifi">Do you really want to disable WiFi?</string>
+    <string name="disableblue">Do you really want to disable Bluetooth?</string>
+
 </resources>

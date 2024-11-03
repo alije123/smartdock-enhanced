@@ -99,7 +99,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.UnsupportedEncodingException
 import java.net.URLEncoder
-import android.app.AlertDialog
 
 const val DOCK_SERVICE_CONNECTED = "service_connected"
 const val ACTION_TAKE_SCREENSHOT = "take_screenshot"
@@ -262,18 +261,35 @@ class DockService : AccessibilityService(), OnSharedPreferenceChangeListener, On
         pinBtn.setOnClickListener { togglePin() }
         bluetoothBtn.setOnClickListener { 
             if (bluetoothManager.adapter.isEnabled) {
-                val builder = AlertDialog.Builder(this@DockService)
-                builder.setMessage("Are you sure you want to disable bluetooth?")
-                    .setPositiveButton("Yes") { dialog, id ->
-                        //toggle bluetooth
-                        toggleBluetooth() 
-                    }
-                    .setNegativeButton("No") { dialog, id ->
-                        // Dismiss the dialog
-                        dialog.dismiss()
-                    }
-                val alert = builder.create()
-                alert.show()
+                val layoutParams = Utils.makeWindowParams(
+                    Utils.dpToPx(context, 400),
+                    Utils.dpToPx(context, 120), context, secondary
+                )
+                layoutParams.gravity = Gravity.CENTER
+                layoutParams.x = Utils.dpToPx(context, 10)
+                layoutParams.flags = (WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
+                        or WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH)
+                
+                val disabledialog = LayoutInflater.from(context).inflate(R.layout.disable_dialog, null) as LinearLayout
+                disabledialog!!.setOnTouchListener { _, event ->
+                    if (event.action == MotionEvent.ACTION_OUTSIDE)
+                        windowManager.removeView(disabledialog)
+
+                    false
+                }
+                val cancelBtn = disabledialog!!.findViewById<Button>(R.id.button_cancel)
+                val disableBtn = disabledialog!!.findViewById<Button>(R.id.button_disable)
+                val textTV = disabledialog!!.findViewById<TextView>(R.id.tv_text)
+                textTV.setText(getString(R.string.disableblue))
+                disableBtn.setOnClickListener {
+                    windowManager.removeView(disabledialog)
+                    toggleBluetooth()
+                }
+                cancelBtn.setOnClickListener {
+                    windowManager.removeView(disabledialog)
+                }
+                ColorUtils.applyMainColor(context, sharedPreferences, disabledialog!!)
+                windowManager.addView(disabledialog, layoutParams)
             }else {
                 toggleBluetooth() 
             }
@@ -287,18 +303,35 @@ class DockService : AccessibilityService(), OnSharedPreferenceChangeListener, On
         }
         wifiBtn.setOnClickListener { 
             if (wifiManager.isWifiEnabled) {
-                val builder = AlertDialog.Builder(this@DockService)
-                builder.setMessage("Are you sure you want to disable wifi?")
-                    .setPositiveButton("Yes") { dialog, id ->
-                        //toggle wifi
-                        toggleWifi()
-                    }
-                    .setNegativeButton("No") { dialog, id ->
-                        // Dismiss the dialog
-                        dialog.dismiss()
-                    }
-                val alert = builder.create()
-                alert.show()
+                val layoutParams = Utils.makeWindowParams(
+                    Utils.dpToPx(context, 400),
+                    Utils.dpToPx(context, 120), context, secondary
+                )
+                layoutParams.gravity = Gravity.CENTER
+                layoutParams.x = Utils.dpToPx(context, 10)
+                layoutParams.flags = (WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
+                        or WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH)
+                
+                val disabledialog = LayoutInflater.from(context).inflate(R.layout.disable_dialog, null) as LinearLayout
+                disabledialog!!.setOnTouchListener { _, event ->
+                    if (event.action == MotionEvent.ACTION_OUTSIDE)
+                        windowManager.removeView(disabledialog)
+
+                    false
+                }
+                val cancelBtn = disabledialog!!.findViewById<Button>(R.id.button_cancel)
+                val disableBtn = disabledialog!!.findViewById<Button>(R.id.button_disable)
+                val textTV = disabledialog!!.findViewById<TextView>(R.id.tv_text)
+                textTV.setText(getString(R.string.disablewifi))
+                disableBtn.setOnClickListener {
+                    windowManager.removeView(disabledialog)
+                    toggleWifi()
+                }
+                cancelBtn.setOnClickListener {
+                    windowManager.removeView(disabledialog)
+                }
+                ColorUtils.applyMainColor(context, sharedPreferences, disabledialog!!)
+                windowManager.addView(disabledialog, layoutParams)
             }else {
                 toggleWifi() 
             }
