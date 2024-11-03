@@ -1585,7 +1585,7 @@ class DockService : AccessibilityService(), OnSharedPreferenceChangeListener, On
                     "round_dock",
                     false
                 )
-            ) R.drawable.round_rect else R.drawable.rect
+            ) R.drawable.toproundrect else R.drawable.rect
         )
         ColorUtils.applyMainColor(context, sharedPreferences, dockLayout)
     }
@@ -1722,6 +1722,19 @@ class DockService : AccessibilityService(), OnSharedPreferenceChangeListener, On
             override fun onStopTrackingTouch(p1: SeekBar) {}
         })
         ColorUtils.applySecondaryColor(context, sharedPreferences, musicIcon)
+        val notifIcon = audioPanel!!.findViewById<ImageView>(R.id.ap_notify_icon)
+        val notifSb = audioPanel!!.findViewById<SeekBar>(R.id.ap_notify_sb)
+        notifSb.max = audioManager.getStreamMaxVolume(AudioManager.STREAM_NOTIFICATION)
+        notifSb.progress = audioManager.getStreamVolume(AudioManager.STREAM_NOTIFICATION)
+        notifSb.setOnSeekBarChangeListener(object : OnSeekBarChangeListener {
+            override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
+                audioManager.setStreamVolume(AudioManager.STREAM_NOTIFICATION, progress, 0)
+            }
+
+            override fun onStartTrackingTouch(p1: SeekBar) {}
+            override fun onStopTrackingTouch(p1: SeekBar) {}
+        })
+        ColorUtils.applySecondaryColor(context, sharedPreferences, notifIcon)
         ColorUtils.applyMainColor(context, sharedPreferences, audioPanel!!)
         windowManager.addView(audioPanel, layoutParams)
         audioPanelVisible = true
