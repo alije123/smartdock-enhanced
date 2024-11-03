@@ -1735,6 +1735,19 @@ class DockService : AccessibilityService(), OnSharedPreferenceChangeListener, On
             override fun onStopTrackingTouch(p1: SeekBar) {}
         })
         ColorUtils.applySecondaryColor(context, sharedPreferences, notifIcon)
+        val sysIcon = audioPanel!!.findViewById<ImageView>(R.id.ap_sys_icon)
+        val sysSb = audioPanel!!.findViewById<SeekBar>(R.id.ap_sys_sb)
+        sysSb.max = audioManager.getStreamMaxVolume(AudioManager.STREAM_SYSTEM)
+        sysSb.progress = audioManager.getStreamVolume(AudioManager.STREAM_SYSTEM)
+        sysSb.setOnSeekBarChangeListener(object : OnSeekBarChangeListener {
+            override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
+                audioManager.setStreamVolume(AudioManager.STREAM_SYSTEM, progress, 0)
+            }
+
+            override fun onStartTrackingTouch(p1: SeekBar) {}
+            override fun onStopTrackingTouch(p1: SeekBar) {}
+        })
+        ColorUtils.applySecondaryColor(context, sharedPreferences, sysIcon)
         ColorUtils.applyMainColor(context, sharedPreferences, audioPanel!!)
         windowManager.addView(audioPanel, layoutParams)
         audioPanelVisible = true
