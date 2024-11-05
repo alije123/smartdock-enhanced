@@ -1,3 +1,8 @@
+My fork(this) contains some missing features from original app. 
+
+**To install, use actions tab and look for the lastest "Build debug apk" action, scroll down to "Artifacts" and download "apk-debug". (You have to be logged in to Github)**
+
+Original repository readme:
 <div align="center">
   <h1>Smart Dock</h1>
   A user-friendly desktop mode launcher that offers a modern and customizable user interface
